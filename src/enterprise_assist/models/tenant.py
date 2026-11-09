@@ -46,8 +46,8 @@ class SecurityContext(BaseModel):
     clearance_level: int = Field(default=1, ge=1, le=5)
 
     def can_access_brand(self, target_brand: str) -> bool:
-        """Enforce strict brand data boundary isolation."""
-        if self.brand == EnterpriseBrand.ENTERPRISE_CORE:
+        """Enforce strict brand data boundary isolation while allowing global core policies."""
+        if self.brand == EnterpriseBrand.ENTERPRISE_CORE or target_brand.lower() in ("enterprisecore", "global"):
             return True
         return self.brand.value.lower() == target_brand.lower()
 
