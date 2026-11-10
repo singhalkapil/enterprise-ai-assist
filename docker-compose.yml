@@ -1,0 +1,27 @@
+services:
+  enterprise-ai-assist:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: enterprise-ai-assist-service
+    ports:
+      - "8000:8000"
+    environment:
+      - AWS_REGION=us-east-1
+      - BEDROCK_ASSUME_ROLE_ARN=arn:aws:iam::123456789012:role/EnterpriseBedrockAgentRole
+      - REDIS_URL=redis://redis:6379/0
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    container_name: enterprise-ai-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
